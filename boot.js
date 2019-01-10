@@ -20,9 +20,9 @@ function initializeText() {
   }
   var button = newGame.add.button(newGame.world.centerX, newGame.world.centerY + 130, 'button1', startGameFunc);
   button.anchor.setTo(0.5);
-  var titleTextPt1 = newGame.add.text(newGame.world.centerX, newGame.world.centerY - 200, "Flappy Bird",
+  var titleTextPt1 = newGame.add.text(newGame.world.centerX, newGame.world.centerY - 200, "FLAPPY BIRD",
       {font: "80px Righteous", fill: "#ffffff"});
-  var titleTextPt2 = newGame.add.text(newGame.world.centerX, newGame.world.centerY - 120, "Space Edition",
+  var titleTextPt2 = newGame.add.text(newGame.world.centerX, newGame.world.centerY - 135, "SPACE EDITION",
       {font: "40px Righteous", fill: "#ffffff"});
   var playButton = newGame.add.text(newGame.world.centerX, newGame.world.centerY + 130, "PLAY",
       {font: "50px Righteous", fill: "#ffffff"});
@@ -61,9 +61,9 @@ var PreloadState = {
   preload: function() {
     newGame.load.audio('jump', 'assets/sounds/jump.wav');
     newGame.load.audio('end_of_game', 'assets/sounds/end_of_game.wav');
-    newGame.load.image('flappy_bird_yellow', 'assets/images/flappy_bird_yellow.jpg');
+    newGame.load.image('flappy_bird_yellow', 'assets/images/flappy_bird.png');
     newGame.load.image('green_pipe', 'assets/images/green_pipe.png');
-    newGame.load.image('yellow_star', 'assets/images/yellow_star.png');
+    newGame.load.image('yellow_star', 'assets/images/yellow_star_final.png');
     newGame.load.image('button1', 'assets/images/button1.png');
 
     this.background = newGame.add.sprite(270, 350, 'background');
@@ -105,17 +105,20 @@ var MainState = {
     preload: function() {
       newGame.load.audio('jump', 'assets/sounds/jump.wav');
       newGame.load.audio('end_of_game', 'assets/sounds/end_of_game.wav');
-      newGame.load.image('flappy_bird_yellow', 'assets/images/flappy_bird_yellow.jpg');
+      //newGame.load.image('flappy_bird_yellow', 'assets/images/flappy_bird_yellow.jpg');
       newGame.load.image('green_pipe', 'assets/images/green_pipe.png');
-      newGame.load.image('yellow_star', 'assets/images/yellow_star.png');
+      //newGame.load.image('yellow_star', 'assets/images/yellow_star.png');
     },
 
     create: function() {
+      this.background = newGame.add.sprite(270, 350, 'background');
+      this.background.anchor.setTo(0.5);
       this.score = 0;
-      this.scoreText = newGame.add.text(newGame.world.centerX, newGame.world.centerY - 120, "0",
+      this.scoreText = newGame.add.text(newGame.world.centerX, newGame.world.centerY - 225, "0",
                   { font: "50px Impact", fill: "#ffffff" });
-      newGame.stage.backgroundColor = '#71c5cf';
 
+      newGame.world.bringToTop(this.scoreText);
+      // newGame.stage.backgroundColor = '#71c5cf'
       this.flappingNoise = newGame.add.audio('jump');
       this.endOfGame = newGame.add.audio('end_of_game');
 
@@ -128,7 +131,7 @@ var MainState = {
       newGame.physics.arcade.enable(this.bird);
       this.timer = newGame.time.events.loop(1500, this.addPipeRow, this);
 
-      this.bird.body.gravity.y = 1300;
+      this.bird.body.gravity.y = 1500;
 
       var spaceKey = newGame.input.keyboard.addKey(
                       Phaser.Keyboard.SPACEBAR);
@@ -156,7 +159,7 @@ var MainState = {
       if (!this.bird.alive) {
         return;
       }
-      this.bird.body.velocity.y = -350;
+      this.bird.body.velocity.y = -400;
       var tiltAnimation = newGame.add.tween(this.bird);
 
       tiltAnimation.to({angle: -10}, 500);
@@ -175,7 +178,7 @@ var MainState = {
 
       newGame.physics.arcade.enable(newPipe);
 
-      newPipe.body.velocity.x = -200;
+      newPipe.body.velocity.x = -275;
 
       newPipe.checkWorldBounds = true;
       newPipe.outOfBoundsKill = true;
@@ -185,9 +188,10 @@ var MainState = {
       this.stars.add(newStar);
 
       newGame.physics.arcade.enable(newStar);
-      newStar.body.velocity.x = -200;
+      newStar.body.velocity.x = -275;
       newStar.checkWorldBounds = true;
       newStar.outofBoundsKill = true;
+
     },
 
     addPipeRow: function() {
@@ -202,6 +206,7 @@ var MainState = {
       }
 
 
+      newGame.world.bringToTop(this.scoreText);
     },
 
     gotStar: function() {
@@ -262,9 +267,6 @@ var GameOverState = {
           {font: "40px Righteous", fill: "#ffffff"});
     highScoreText.anchor.setTo(0.5);
 
-
-
-
     this.playButton = newGame.add.button(newGame.world.centerX - 120, newGame.world.centerY + 135, 'button1', this.startGame, this);
     this.playButton.anchor.setTo(0.5);
     var playButtonText = newGame.add.text(newGame.world.centerX - 120, newGame.world.centerY + 135, 'PLAY',
@@ -279,11 +281,11 @@ var GameOverState = {
   },
 
   startGame: function() {
-    this.state.start('MainState');
+    newGame.state.start('MainState');
   },
 
   goHome: function() {
-    this.state.start('HomeState');
+    newGame.state.start('HomeState');
   }
 }
 
