@@ -1,26 +1,30 @@
 WebFontConfig = {
-
-    active: function() { newGame.time.events.add(Phaser.Timer.SECOND, createText, this);},
-
+    active: function() { newGame.time.events.add(Phaser.Timer.SECOND, initializeText, this);},
     google: {
       families: ['Righteous']
     }
-
 };
 
-var titleTextPt3 = null;
+var loadingScreenText = null;
+var totalScore = 0;
+var highScore = 0;
 
 function preloadWebFont() {
     newGame.load.script('webfont', 'https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js');
 }
 
-function createText() {
-  titleTextPt3.text = "";
+function initializeText() {
+  loadingScreenText.text = "";
+  var startGameFunc = function() {
+    newGame.state.start('MainState');
+  }
+  var button = newGame.add.button(newGame.world.centerX, newGame.world.centerY + 130, 'button1', startGameFunc);
+  button.anchor.setTo(0.5);
   var titleTextPt1 = newGame.add.text(newGame.world.centerX, newGame.world.centerY - 200, "Flappy Bird",
       {font: "80px Righteous", fill: "#ffffff"});
   var titleTextPt2 = newGame.add.text(newGame.world.centerX, newGame.world.centerY - 120, "Space Edition",
       {font: "40px Righteous", fill: "#ffffff"});
-  var playButton = newGame.add.text(newGame.world.centerX, newGame.world.centerY + 100, "PLAY",
+  var playButton = newGame.add.text(newGame.world.centerX, newGame.world.centerY + 130, "PLAY",
       {font: "50px Righteous", fill: "#ffffff"});
   titleTextPt1.anchor.setTo(0.5);
   titleTextPt2.anchor.setTo(0.5);
@@ -38,13 +42,10 @@ var BootState = {
   preload: function() {
     newGame.load.image('loading_bar', 'assets/images/loading_bar.jpg');
     newGame.load.image('main_pic', 'assets/images/flappy_bird_yellow.png');
-
     newGame.load.image('background', 'assets/images/space_background.jpg');
-
   },
 
   create: function() {
-    newGame.stage.backgroundColor = '#71c5cf';
     newGame.state.start('PreloadState');
   }
 }
@@ -64,6 +65,9 @@ var PreloadState = {
     newGame.load.image('green_pipe', 'assets/images/green_pipe.png');
     newGame.load.image('yellow_star', 'assets/images/yellow_star.png');
     newGame.load.image('button1', 'assets/images/button1.png');
+
+    this.background = newGame.add.sprite(270, 350, 'background');
+    this.background.anchor.setTo(0.5);
 
     this.mainPic = newGame.add.sprite(newGame.world.centerX, newGame.world.centerY - 25, 'main_pic');
     this.mainPic.anchor.setTo(0.5);
@@ -87,18 +91,14 @@ var HomeState = {
   create: function() {
     this.background = newGame.add.sprite(270, 350, 'background');
     this.background.anchor.setTo(0.5);
-    titleTextPt3 = newGame.add.text(newGame.world.centerX, newGame.world.centerY + 50, "Loading...",
+    loadingScreenText = newGame.add.text(newGame.world.centerX, newGame.world.centerY + 50, "Loading...",
         {font: "60px Arial", fill: "#ffffff"});
-    titleTextPt3.anchor.setTo(0.5);
-
-    this.button = newGame.add.button(newGame.world.centerX, newGame.world.centerY + 100, 'button1', this.startGame, this);
-    this.button.anchor.setTo(0.5);
+    loadingScreenText.anchor.setTo(0.5);
   },
 
   startGame: function() {
     this.state.start('MainState');
   }
-
 }
 
 var MainState = {
@@ -137,6 +137,8 @@ var MainState = {
 
     update: function() {
         if (this.bird.y > 590 || this.bird.y < 0) {
+          totalScore = this.score;
+          highScore = Math.max(this.score, highScore);
           this.gameOver();
         }
         newGame.physics.arcade.overlap(this.bird, this.pipes, this.pipeCollision, null, this);
@@ -234,11 +236,63 @@ var MainState = {
     }
 };
 
+var GameOverState = {
+
+  create: function() {
+    this.background = newGame.add.sprite(270, 350, 'background');
+    this.background.anchor.setTo(0.5);
+
+    gameOverText = newGame.add.text(newGame.world.centerX, newGame.world.centerY - 180, "GAME OVER",
+          {font: "90px Righteous", fill: "#ffffff"});
+    gameOverText.anchor.setTo(0.5);
+
+    yourScoreText = newGame.add.text(newGame.world.centerX - 120, newGame.world.centerY - 55, "Your Score",
+          {font: "25px Righteous", fill: "#ffffff"});
+    yourScoreText.anchor.setTo(0.5);
+
+    scoreText = newGame.add.text(newGame.world.centerX - 120, newGame.world.centerY - 5, totalScore,
+          {font: "40px Righteous", fill: "#ffffff"});
+    scoreText.anchor.setTo(0.5);
+
+    yourHighScoreText = newGame.add.text(newGame.world.centerX + 120, newGame.world.centerY - 55, "High Score",
+          {font: "25px Righteous", fill: "#ffffff"});
+    yourHighScoreText.anchor.setTo(0.5);
+
+    highScoreText = newGame.add.text(newGame.world.centerX + 120, newGame.world.centerY - 5, highScore,
+          {font: "40px Righteous", fill: "#ffffff"});
+    highScoreText.anchor.setTo(0.5);
+
+
+
+
+    this.playButton = newGame.add.button(newGame.world.centerX - 120, newGame.world.centerY + 135, 'button1', this.startGame, this);
+    this.playButton.anchor.setTo(0.5);
+    var playButtonText = newGame.add.text(newGame.world.centerX - 120, newGame.world.centerY + 135, 'PLAY',
+          {font: "50px Righteous", fill: "#ffffff"});
+    playButtonText.anchor.setTo(0.5);
+
+    this.homeButton = newGame.add.button(newGame.world.centerX + 120, newGame.world.centerY + 135, 'button1', this.goHome, this);
+    this.homeButton.anchor.setTo(0.5);
+    var homeButtonText = newGame.add.text(newGame.world.centerX + 120, newGame.world.centerY + 135, 'HOME',
+          {font: "50px Righteous", fill: "#ffffff"});
+    homeButtonText.anchor.setTo(0.5);
+  },
+
+  startGame: function() {
+    this.state.start('MainState');
+  },
+
+  goHome: function() {
+    this.state.start('HomeState');
+  }
+}
+
 var newGame = new Phaser.Game(600, 700);
 
 newGame.state.add('MainState', MainState);
 newGame.state.add('HomeState', HomeState);
 newGame.state.add('BootState', BootState);
 newGame.state.add('PreloadState', PreloadState);
+newGame.state.add('GameOverState', GameOverState);
 
 newGame.state.start('BootState');
