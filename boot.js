@@ -129,16 +129,20 @@ var MainState = {
 
       newGame.physics.startSystem(Phaser.Physics.ARCADE);
       newGame.physics.arcade.enable(this.bird);
-      this.timer = newGame.time.events.loop(1500, this.addPipeRow, this);
+      this.timer = newGame.time.events.loop(1200, this.addPipeRow, this);
 
       this.bird.body.gravity.y = 1500;
 
       var spaceKey = newGame.input.keyboard.addKey(
                       Phaser.Keyboard.SPACEBAR);
+      var touch = newGame.input.pointer1
       spaceKey.onDown.add(this.flyUp, this);
+      newGame.input.onDown.add(this.flyUp, this);
     },
 
     update: function() {
+
+
         if (this.bird.y > 590 || this.bird.y < 0) {
           totalScore = this.score;
           highScore = Math.max(this.score, highScore);
@@ -159,7 +163,7 @@ var MainState = {
       if (!this.bird.alive) {
         return;
       }
-      this.bird.body.velocity.y = -400;
+      this.bird.body.velocity.y = -450;
       var tiltAnimation = newGame.add.tween(this.bird);
 
       tiltAnimation.to({angle: -10}, 500);
