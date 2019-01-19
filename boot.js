@@ -62,7 +62,8 @@ var PreloadState = {
     newGame.load.audio('jump', 'assets/sounds/jump.wav');
     newGame.load.audio('end_of_game', 'assets/sounds/end_of_game.wav');
     newGame.load.image('flappy_bird_yellow', 'assets/images/flappy_bird.png');
-    newGame.load.image('green_pipe', 'assets/images/green_pipe.png');
+    newGame.load.image('purple_pipe', 'assets/images/purple_pipe.png');
+    newGame.load.image('purple_pipe_end', 'assets/images/purple_pipe_end.png');
     newGame.load.image('yellow_star', 'assets/images/yellow_star_final.png');
     newGame.load.image('button1', 'assets/images/button1.png');
 
@@ -106,7 +107,7 @@ var MainState = {
       newGame.load.audio('jump', 'assets/sounds/jump.wav');
       newGame.load.audio('end_of_game', 'assets/sounds/end_of_game.wav');
       //newGame.load.image('flappy_bird_yellow', 'assets/images/flappy_bird_yellow.jpg');
-      newGame.load.image('green_pipe', 'assets/images/green_pipe.png');
+      newGame.load.image('purple_pipe', 'assets/images/purple_pipe.png');
       //newGame.load.image('yellow_star', 'assets/images/yellow_star.png');
     },
 
@@ -115,7 +116,7 @@ var MainState = {
       this.background.anchor.setTo(0.5);
       this.score = 0;
       this.scoreText = newGame.add.text(newGame.world.centerX, newGame.world.centerY - 225, "0",
-                  { font: "50px Impact", fill: "#ffffff" });
+                  { font: "90px Righteous", fill: "#ffffff" });
 
       newGame.world.bringToTop(this.scoreText);
       // newGame.stage.backgroundColor = '#71c5cf'
@@ -129,7 +130,7 @@ var MainState = {
 
       newGame.physics.startSystem(Phaser.Physics.ARCADE);
       newGame.physics.arcade.enable(this.bird);
-      this.timer = newGame.time.events.loop(1200, this.addPipeRow, this);
+      this.timer = newGame.time.events.loop(1350, this.addPipeRow, this);
 
       this.bird.body.gravity.y = 1500;
 
@@ -142,8 +143,7 @@ var MainState = {
 
     update: function() {
 
-
-        if (this.bird.y > 590 || this.bird.y < 0) {
+        if (this.bird.y > 690 || this.bird.y < 0) {
           totalScore = this.score;
           highScore = Math.max(this.score, highScore);
           this.gameOver();
@@ -175,8 +175,20 @@ var MainState = {
       newGame.state.start('GameOverState');
     },
 
+    addPipeEnd: function(x, y) {
+      var newPipeEnd = newGame.add.sprite(x, y, 'purple_pipe_end');
+      this.pipes.add(newPipeEnd);
+
+      newGame.physics.arcade.enable(newPipeEnd);
+
+      newPipeEnd.body.velocity.x = -275;
+
+      newPipeEnd.checkWorldBounds = true;
+      newPipeEnd.outOfBoundsKill = true;
+    },
+
     addPipe: function(x, y) {
-      var newPipe = newGame.add.sprite(x, y, 'green_pipe');
+      var newPipe = newGame.add.sprite(x, y, 'purple_pipe');
 
       this.pipes.add(newPipe);
 
@@ -199,13 +211,17 @@ var MainState = {
     },
 
     addPipeRow: function() {
-      var opening = Math.floor(Math.random() * 8) + 1;
+      var opening = Math.floor(Math.random() * 7) + 1;
 
-      this.addStar(600, (opening + Math.floor(Math.random() * 3) + 1) * 45);
+      this.addStar(620, (opening + Math.random() * 2) * 64 + 15);
+      this.addPipeEnd(595, (opening) * 64);
+      this.addPipeEnd(595, (opening + 3) * 64);
 
-      for (var count = 0; count < 16; count++) {
-          if (count < opening || count > opening + 3) {
-              this.addPipe(600, count * 45 + 10);
+      for (var count = 0; count < 11; count++) {
+          if (count < opening) {
+            this.addPipe(600, count * 64);
+          } else if (count > opening + 2) {
+            this.addPipe(600, count * 64 + 15);
           }
       }
 
