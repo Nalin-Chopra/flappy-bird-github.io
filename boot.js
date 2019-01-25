@@ -18,17 +18,31 @@ function initializeText() {
   var startGameFunc = function() {
     newGame.state.start('MainState');
   }
-  var button = newGame.add.button(newGame.world.centerX, newGame.world.centerY + 130, 'button1', startGameFunc);
-  button.anchor.setTo(0.5);
+
+  var creditsFunc = function() {
+    newGame.state.start('CreditState');
+  }
+
+  var button1 = newGame.add.button(newGame.world.centerX - 120, newGame.world.centerY + 130, 'button1', startGameFunc);
+  button1.anchor.setTo(0.5);
+
+  var button2 = newGame.add.button(newGame.world.centerX + 120, newGame.world.centerY + 130, 'button1', creditsFunc);
+  button2.anchor.setTo(0.5);
+
   var titleTextPt1 = newGame.add.text(newGame.world.centerX, newGame.world.centerY - 200, "FLAPPY BIRD",
       {font: "80px Righteous", fill: "#ffffff"});
   var titleTextPt2 = newGame.add.text(newGame.world.centerX, newGame.world.centerY - 135, "SPACE EDITION",
       {font: "40px Righteous", fill: "#ffffff"});
-  var playButton = newGame.add.text(newGame.world.centerX, newGame.world.centerY + 130, "PLAY",
+  var playButton = newGame.add.text(newGame.world.centerX - 120, newGame.world.centerY + 130, "PLAY",
       {font: "50px Righteous", fill: "#ffffff"});
+
+  var creditsButton = newGame.add.text(newGame.world.centerX + 120, newGame.world.centerY + 130, "CREDITS",
+      {font: "40px Righteous", fill: "#ffffff"});
+
   titleTextPt1.anchor.setTo(0.5);
   titleTextPt2.anchor.setTo(0.5);
   playButton.anchor.setTo(0.5);
+  creditsButton.anchor.setTo(0.5);
 }
 
 
@@ -136,14 +150,14 @@ var MainState = {
 
       var spaceKey = newGame.input.keyboard.addKey(
                       Phaser.Keyboard.SPACEBAR);
-      var touch = newGame.input.pointer1
+      //var touch = newGame.input.pointer1
       spaceKey.onDown.add(this.flyUp, this);
       newGame.input.onDown.add(this.flyUp, this);
     },
 
     update: function() {
 
-        if (this.bird.y > 690 || this.bird.y < 0) {
+        if (this.bird.y > 690) {
           totalScore = this.score;
           highScore = Math.max(this.score, highScore);
           this.gameOver();
@@ -229,15 +243,15 @@ var MainState = {
       newGame.world.bringToTop(this.scoreText);
     },
 
-    gotStar: function() {
+    gotStar: function(bird, star) {
       if (!this.bird.alive) {
         return;
       }
       this.score += 1;
       this.scoreText.text = this.score;
 
-      this.stars.getFirstAlive().destroy();
-
+      //this.stars.getFirstAlive().destroy();
+      this.stars.remove(star);
     },
 
     pipeCollision: function() {
