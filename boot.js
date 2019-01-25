@@ -45,6 +45,33 @@ function initializeText() {
   creditsButton.anchor.setTo(0.5);
 }
 
+var CreditState = {
+  init: function() {
+    newGame.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+    newGame.scale.pageAlignHorizontally = true;
+    newGame.scale.pageAlignVertically = true;
+  },
+
+  preload: function() {
+    this.background = newGame.add.sprite(270, 350, 'background');
+    this.background.anchor.setTo(0.5);
+  },
+
+  create: function() {
+    var backButton = newGame.add.button(newGame.world.centerX, newGame.world.centerY + 150, 'button1', this.goHome);
+    backButton.anchor.setTo(0.5);
+    var backButtonText = newGame.add.text(newGame.world.centerX, newGame.world.centerY + 150, "BACK",
+        {font: "50px Righteous", fill: "#ffffff"});
+    backButtonText.anchor.setTo(0.5);
+
+    
+  },
+
+  goHome: function() {
+    newGame.state.start('HomeState');
+  }
+}
+
 
 var BootState = {
   init: function() {
@@ -80,6 +107,8 @@ var PreloadState = {
     newGame.load.image('purple_pipe_end', 'assets/images/purple_pipe_end.png');
     newGame.load.image('yellow_star', 'assets/images/yellow_star_final.png');
     newGame.load.image('button1', 'assets/images/button1.png');
+    newGame.load.audio('jump', 'assets/sounds/jump.wav');
+    newGame.load.audio('end_of_game', 'assets/sounds/end_of_game.wav');
 
     this.background = newGame.add.sprite(270, 350, 'background');
     this.background.anchor.setTo(0.5);
@@ -94,7 +123,6 @@ var PreloadState = {
   },
 
   create: function() {
-    newGame.stage.backgroundColor = '#71c5cf';
     newGame.state.start('HomeState');
   }
 }
@@ -109,20 +137,11 @@ var HomeState = {
     loadingScreenText = newGame.add.text(newGame.world.centerX, newGame.world.centerY + 50, "Loading...",
         {font: "60px Arial", fill: "#ffffff"});
     loadingScreenText.anchor.setTo(0.5);
-  },
-
-  startGame: function() {
-    this.state.start('MainState');
   }
 }
 
 var MainState = {
     preload: function() {
-      newGame.load.audio('jump', 'assets/sounds/jump.wav');
-      newGame.load.audio('end_of_game', 'assets/sounds/end_of_game.wav');
-      //newGame.load.image('flappy_bird_yellow', 'assets/images/flappy_bird_yellow.jpg');
-      newGame.load.image('purple_pipe', 'assets/images/purple_pipe.png');
-      //newGame.load.image('yellow_star', 'assets/images/yellow_star.png');
     },
 
     create: function() {
@@ -150,7 +169,6 @@ var MainState = {
 
       var spaceKey = newGame.input.keyboard.addKey(
                       Phaser.Keyboard.SPACEBAR);
-      //var touch = newGame.input.pointer1
       spaceKey.onDown.add(this.flyUp, this);
       newGame.input.onDown.add(this.flyUp, this);
     },
@@ -250,7 +268,6 @@ var MainState = {
       this.score += 1;
       this.scoreText.text = this.score;
 
-      //this.stars.getFirstAlive().destroy();
       this.stars.remove(star);
     },
 
@@ -330,5 +347,6 @@ newGame.state.add('HomeState', HomeState);
 newGame.state.add('BootState', BootState);
 newGame.state.add('PreloadState', PreloadState);
 newGame.state.add('GameOverState', GameOverState);
+newGame.state.add('CreditState', CreditState);
 
 newGame.state.start('BootState');
